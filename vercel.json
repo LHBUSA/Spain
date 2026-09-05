@@ -2,8 +2,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    {"source": "/workspace", "destination": "https://propdata.proptechusa.ai/dashboard", "permanent": false},
-    {"source": "/dashboard", "destination": "https://propdata.proptechusa.ai/dashboard", "permanent": false}
+    {"source": "/workspace", "destination": "/dashboard", "permanent": false}
   ],
   "headers": [
     {
