@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PropData Spain Docs | Catastro Identity, Geometry & Coverage</title>
+<meta name="description" content="PropData Spain launch documentation for cadastral identity, Catastro CP/AD/BU sources, territorial coverage, protected-data boundaries, provenance and delivery.">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#fffaf3">
+<link rel="canonical" href="https://spain.proptechusa.ai/docs">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site.css">
+</head>
+<body>
+<header class="topbar"><div class="shell nav-shell"><a class="brand" href="/"><img src="/favicon.svg" alt=""><span><strong>PropData</strong><small>SPAIN · DOCS</small></span></a><button class="menu" id="menu" type="button" aria-label="Open navigation">☰</button><nav class="nav-links" id="nav"><a href="/">Product</a><a href="#status">Status</a><a href="#identity">Identity</a><a href="#coverage">Coverage</a><a href="#routes">Routes</a><a href="#sources">Sources</a><a href="https://propdata.proptechusa.ai/dashboard">Dashboard</a></nav><div class="nav-actions"><a class="nav-cta" href="mailto:sales@proptechusa.ai?subject=PropData%20Spain%20Early%20Access">Early access</a></div></div></header>
+<main class="docs-page"><div class="shell docs-layout">
+<aside class="docs-side"><b>SPAIN REFERENCE</b><a href="#status">Launch status</a><a href="#architecture">Architecture</a><a href="#identity">Identity model</a><a href="#coverage">Coverage</a><a href="#protected">Protected data</a><a href="#routes">API routes</a><a href="#geometry">Geometry</a><a href="#sources">Sources & licence</a><a href="#delivery">Delivery</a></aside>
+<article class="docs-main">
+<section class="docs-hero"><p class="eyebrow">PROPDATA SPAIN · LAUNCH REFERENCE</p><h1>One country scope.<br>The cadastral graph behind it.</h1><p>Spain is in launch certification. These docs describe the country contract we are promoting: authoritative cadastral identity, addresses, buildings, geometry, municipality routing, explicit territorial coverage, source provenance and strict separation of protected data.</p></section>
+<section class="docs-block" id="status"><h2>Launch status</h2><div class="docs-note"><strong>Certification in progress.</strong> Spain has not been presented here as generally available. Production promotion remains gated by national evidence, municipality reconciliation and zero-regression checks.</div><h3>Latest verified municipality-scale proof</h3><p>On 4 September 2026, the Catastro REST municipality preview for DGC municipality <code>02001</code> selected 500 existing canonical parcels. All 500 completed the fetch path; 499 emitted direct property detail and one correctly returned no property detail. The gate requested neither ownership nor cadastral value, detected zero protected-field key hits and performed zero production writes.</p><div class="docs-grid"><div class="docs-card"><b>500 / 500</b><span>canonical parcel requests completed</span></div><div class="docs-card"><b>499</b><span>direct property detail records emitted</span></div><div class="docs-card"><b>0</b><span>protected-field hits / production writes</span></div></div><p>The certification policy is intentionally fail closed: any fetch error aborts the write path and an exact existing parcel is required before property detail can attach.</p></section>
+<section class="docs-block" id="architecture"><h2>Country architecture</h2><p>PropData does not flatten Spain into a single source table. The operating graph preserves the official cadastral reference and municipality context while reconciling three INSPIRE source families and non-protected property detail.</p><div class="docs-code">RESOLVE INPUT
+  ↓
+ROUTE COUNTRY = ES
+  ↓
+ROUTE CADASTRAL AUTHORITY
+  ├─ DGC common territory
+  ├─ País Vasco → separate foral source
+  └─ Navarra → separate foral source
+  ↓
+RESOLVE CADASTRAL IDENTITY
+  ↓
+ATTACH CP / AD / BU RELATIONSHIPS
+  ↓
+PRESERVE SOURCE + MUNICIPALITY + REVISION
+  ↓
+APPLY COVERAGE + PROTECTED-DATA RULES
+  ↓
+DELIVER REST / MCP / BULK / CUSTOM</div></section>
+<section class="docs-block" id="identity"><h2>Identity model</h2><div class="contract-table"><table><thead><tr><th>DOMAIN</th><th>AUTHORITATIVE CONCEPT</th><th>PROPDATA ROLE</th></tr></thead><tbody><tr><td>Cadastral identity</td><td>Referencia catastral</td><td>Durable source property identity and deterministic join key.</td></tr><tr><td>Municipality</td><td>DGC municipality code / source package</td><td>Jurisdiction routing, source lineage and revision scope.</td></tr><tr><td>CP</td><td>Cadastral Parcel</td><td>Parcel identity, geometry and cadastral-zoning context.</td></tr><tr><td>AD</td><td>Address</td><td>Official address identity and point context.</td></tr><tr><td>BU</td><td>Building / BuildingPart</td><td>Construction geometry and parcel relationships where published.</td></tr><tr><td>Property detail</td><td>Non-protected Catastro property information</td><td>Attach only after exact parcel identity is established.</td></tr></tbody></table></div><p>Source-native identifiers are not rewritten into fictional universal fields. PropData normalizes access while retaining the official Spanish semantics needed to trace a fact back to its source.</p></section>
+<section class="docs-block" id="coverage"><h2>Coverage contract</h2><p>The Dirección General del Catastro is competent for 7,610 municipalities and its national cadastral system reports 78,941,430 real-estate records as of January 2026. The DGC territorial scope excludes País Vasco and Navarra, which maintain their own cadastral systems.</p><div class="docs-grid"><div class="docs-card"><b>DGC common territory</b><span>CP / AD / BU and non-protected property-detail certification in progress.</span></div><div class="docs-card"><b>País Vasco</b><span>Álava, Bizkaia and Gipuzkoa require separate foral source integrations.</span></div><div class="docs-card"><b>Navarra</b><span>Separate foral cadastral system; never substituted with DGC data.</span></div></div><h3>Three separate signals</h3><ul><li><strong>Match:</strong> what identity or geometry the request resolved to.</li><li><strong>Coverage:</strong> whether the requested layer is promoted for that authority and municipality.</li><li><strong>Provenance:</strong> which source family, municipality and source revision supports the returned fact.</li></ul><div class="docs-note red"><strong>No cross-authority fabrication.</strong> A DGC match must never be used to imply a property-level fact for Navarra or País Vasco. The correct behavior is authority routing or explicit unavailability.</div></section>
+<section class="docs-block" id="protected"><h2>Protected-data boundary</h2><p>Spain’s Catastro distinguishes non-protected cadastral information from protected data. Publicly accessible non-protected information includes items such as property location, cadastral reference, surface, use/destination, cultivation/use class, construction quality and cadastral cartography.</p><p>Protected data include cadastral ownership identity and individualized cadastral value, including land and construction values. Those fields are not part of the open PropData Spain launch contract.</p><div class="docs-note"><strong>PropData launch rule:</strong> do not request, infer, reconstruct or expose protected ownership/value fields through the open Spain ingestion path. A future lawful source or separately entitled workflow would be a distinct product contract.</div></section>
+<section class="docs-block" id="routes"><h2>API routes</h2><p>Spain will use the established PropData direct REST authentication model: production credentials belong server-side and are sent only in the <code>x-api-key</code> header. The examples below describe the intended country scope and remain certification-gated until Spain is promoted.</p><div class="contract-table"><table><thead><tr><th>ROUTE</th><th>ROLE</th><th>SPAIN CONTRACT</th></tr></thead><tbody><tr><td><code>/v1/property</code></td><td>Property identity</td><td><code>country=ES</code> + address or supported property identifier.</td></tr><tr><td><code>/v1/property/by-location</code></td><td>Coordinate resolution</td><td><code>country=ES</code> + WGS84 latitude / longitude; requires promoted geometry.</td></tr><tr><td><code>/v1/parcel-geometry</code></td><td>Parcel geometry</td><td><code>country=ES</code> + supported canonical cadastral identity.</td></tr><tr><td><code>/v1/auth/usage</code></td><td>Account control</td><td>Authenticated usage and limits for the connected account.</td></tr><tr><td><code>/v1/health</code></td><td>Service health</td><td>Public operational health, not Spain property coverage.</td></tr><tr><td><code>/v1/changelog</code></td><td>Release contract</td><td>API and promoted-data changes.</td></tr></tbody></table></div><div class="docs-code">const url = new URL(
+  "https://propdata-api-worker.sales-fd3.workers.dev/v1/property"
+);
+url.searchParams.set("country", "ES");
+url.searchParams.set("address", "YOUR_SPANISH_ADDRESS");
+
+const controller = new AbortController();
+const timeout = setTimeout(() => controller.abort(), 10_000);
+
+try {
+  const response = await fetch(url, {
+    headers: { "x-api-key": process.env.PROPDATA_API_KEY },
+    signal: controller.signal
+  });
+  if (!response.ok) throw new Error(`PropData ${response.status}`);
+  const property = await response.json();
+  console.log(property);
+} finally {
+  clearTimeout(timeout);
+}</div><p><strong>Illustrative until promotion:</strong> do not treat the existence of a global PropData route as proof that its Spain layer is already generally available.</p></section>
+<section class="docs-block" id="geometry"><h2>Geometry and coordinate resolution</h2><p>DGC’s INSPIRE cadastral mapping publishes source geometry in ETRS89 / UTM zones used across Spain. PropData’s country normalization must preserve the source geometry contract while supporting WGS84 coordinate workflows at the API boundary.</p><ul><li>Return authoritative parcel geometry only where the source layer has passed promotion gates.</li><li>Do not invent a polygon when only an address point or property identity exists.</li><li>Coordinate containment is a spatial match method, not proof of an exact postal address.</li><li>Keep source, municipality and revision evidence with downstream geometry.</li></ul></section>
+<section class="docs-block" id="sources"><h2>Sources & licence</h2><h3>Dirección General del Catastro</h3><p>DGC INSPIRE provides transformed datasets and services for Cadastral Parcels (CP), Addresses (AD) and Buildings (BU). Official ATOM download services and web map / feature services are the authoritative source basis for the common-territory graph.</p><h3>Public-use licence</h3><p>DGC’s cadastral-information licence permits public and commercial use for transformed value-added products. It does not authorize simply republishing or commercially redistributing the original supplied cadastral information unchanged. PropData’s normalization, deterministic joins, coverage semantics, source reconciliation and delivery layer are therefore part of the commercial product itself.</p><p>Official source references: <a class="text-link" href="https://www.catastro.hacienda.gob.es/webinspire/index.html" rel="noopener">DGC INSPIRE services →</a> · <a class="text-link" href="https://www.catastro.hacienda.gob.es/es-ES/catastroencifras.html" rel="noopener">Catastro en cifras →</a> · <a class="text-link" href="https://www.catastro.hacienda.gob.es/es-ES/faqs.html" rel="noopener">Catastro access FAQ →</a></p></section>
+<section class="docs-block" id="delivery"><h2>Delivery</h2><div class="docs-grid"><div class="docs-card"><b>Direct REST</b><span>Server-side <code>x-api-key</code> authentication through the PropData production API.</span></div><div class="docs-card"><b>OAuth MCP</b><span>AI-client access through the separate OAuth-protected PropData MCP connector.</span></div><div class="docs-card"><b>Bulk / custom</b><span>Country, municipality or contract-specific extracts and custom endpoints for enterprise workflows.</span></div></div><p style="margin-top:18px">Need Spain during certification? <a class="text-link" href="mailto:sales@proptechusa.ai?subject=PropData%20Spain%20Early%20Access">Request early access →</a></p></section>
+</article></div></main>
+<footer class="footer"><div class="shell footer-bottom" style="margin-top:0"><span>© 2026 PropTechUSA.ai · PropData Spain</span><span>Launch certification · DGC + separate foral authority model</span></div></footer>
+<script>const m=document.querySelector('#menu'),n=document.querySelector('#nav');m?.addEventListener('click',()=>n?.classList.toggle('open'));n?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>n.classList.remove('open')));</script>
+</body>
+</html>
